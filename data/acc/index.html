@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>FE Studio(beta)</title>
+<style>
+body {
+  font-family: Arial;
+  color: white;
+}
+.split {
+  height: 100%;
+  width: 50%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+.left {
+  left: 0;
+}
+.right {
+  right: 0;
+}
+</style>
+<style type="text/css" media="screen">
+    #editor { 
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+</style>
+</head>
+<body>
+<div class="split left">
+  
+  <div id="editor" onkeyup="update()">
+     
+  </div>
+</div>
+<iframe id='iframe' class="split right" frameBorder="0">
+</iframe>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.2/ace.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+  function update()
+{
+  var idoc = document.getElementById('iframe').contentWindow.document;
+
+  idoc.open();
+  idoc.write(editor.getValue());
+  idoc.close();
+}
+</script>
+<script>
+    window.editor = ace.edit("editor");
+  editor.setTheme("ace/theme/monokai");
+  editor.getSession().setMode("ace/mode/html");
+  editor.setValue(`<!DOCTYPE html>
+<html>
+<head>
+</head>
+
+<body>
+</body>
+
+</html>`,1);
+  editor.setShowPrintMargin(false);
+  editor.setOptions({
+    fontSize: "16pt"
+  });
+</script>
+
+<script type = "text/javascript">
+         const {remote} = require('electron')
+         const {Menu, MenuItem} = remote
+         var fs = require('fs')
+         const {ipcRenderer} = require('electron') 
+         const {globalShortcut} = remote
+          globalShortcut.register('CommandOrControl+S', () => {
+            ipcRenderer.send('saveFile', () => { 
+                  console.log("Event sent."); 
+                })  
+               ipcRenderer.on('sentdata', (event, data) => { 
+                   var sata = editor.getValue();
+                   try { fs.writeFileSync(data, sata, 'utf-8'); }
+                   catch(e) { alert('Failed to save the file !','Failed'); }
+               }) 
+         })
+       
+         const menu = new Menu()
+
+         // Build menu one item at a time, unlike
+         menu.append(new MenuItem ({
+            label: 'Cut',role: "cut"
+         }))
+         menu.append(new MenuItem ({
+            label: 'Copy',role: "copy"
+         }))
+         menu.append(new MenuItem ({
+            label: 'Paste',role: "paste"
+         }))
+         menu.append(new MenuItem ({
+            label: 'Select all',role: "selectall"
+         }))
+         menu.append(new MenuItem({type: 'separator'}))
+         menu.append(new MenuItem({label: 'Save', click(){
+               ipcRenderer.send('saveFile', () => { 
+                  console.log("Event sent."); 
+                })  
+               ipcRenderer.on('sentdata', (event, data) => { 
+                   //console.log(data)
+                   var sata = editor.getValue();
+                   try { fs.writeFileSync(data, sata, 'utf-8'); }
+                   catch(e) { alert('Failed to save the file !','Failed'); }
+               }) 
+
+               
+         }}))
+         menu.append(new MenuItem ({
+            label: 'MenuItem3',role: "editMenu"
+         }))
+           
+        
+         // Prevent default action of right click in chromium. Replace with our menu.
+         window.addEventListener('contextmenu', (e) => {
+            e.preventDefault()
+            menu.popup(remote.getCurrentWindow())
+         }, false)
+         
+        
+      </script>
+</body>
+</html>

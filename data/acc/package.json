@@ -1,0 +1,16 @@
+{
+  "name": "fe-studio",
+  "version": "1.0.0",
+  "description": "A simple frontend editor for beginners ",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+ "electron": "^1.4.13",
+ "electron-packager": "^13.0.1"
+ }
+  ,
+  "author": "Sulav Parajuli",
+  "license": "ISC"
+}
